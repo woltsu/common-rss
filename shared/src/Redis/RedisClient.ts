@@ -2,6 +2,7 @@ import { Redis } from 'ioredis';
 import {
   GroupDeliveryOpts,
   ReadMessageOpts,
+  readResponseSchema,
   SendMessageOpts,
   Streams,
   XAddTokens,
@@ -26,7 +27,7 @@ export class RedisClient {
   }
 
   async sendMessage({ stream, message }: SendMessageOpts) {
-    return await this.client.xadd(stream, XAddTokens.ID, XAddTokens.MESSAGE, message);
+    return await this.client.xadd(stream, XAddTokens.ID, XAddTokens.MESSAGE, JSON.stringify(message));
   }
 
   async readMessage({ group }: ReadMessageOpts) {
@@ -49,7 +50,7 @@ export class RedisClient {
       }
     }
 
-    return await this.client.xreadgroup(
+    const readResponse = await this.client.xreadgroup(
       XReadTokens.GROUP,
       group,
       this.getConsumerId(),
@@ -63,6 +64,9 @@ export class RedisClient {
       Streams.RSS_STREAM,
       GroupDeliveryOpts.LATEST,
     );
+
+    const parsedReadResponse = readResponseSchema.parse(readResponse);
+    return parsedReadResponse[0];
   }
 }
 

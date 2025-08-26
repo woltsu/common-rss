@@ -6,8 +6,8 @@ const main = async () => {
   cron.schedule(
     '* * * * * *',
     async () => {
-      const messages = await redisClient.readMessage({ group: ConsumerGroups.RSS_GROUP });
-      logger.info(messages);
+      const msg = await redisClient.readMessage({ group: ConsumerGroups.RSS_GROUP });
+      logger.info('Received message', msg);
     },
     {
       noOverlap: true,
