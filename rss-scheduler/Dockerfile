@@ -21,15 +21,20 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY rss-scheduler/package*.json ./rss-scheduler/
 COPY rss-scheduler/tsconfig.json ./rss-scheduler/
+COPY shared/package*.json ./shared/
+COPY shared/tsconfig.json ./shared/
 
-# Install dependencies using workspace from root    
-RUN npm ci -w rss-scheduler && npm cache clean --force
+# Install all workspace dependencies
+RUN npm ci && npm cache clean --force
 
 # Copy source code and configuration
 COPY rss-scheduler/ ./rss-scheduler/
+COPY shared/ ./shared/
 
-# Build the TypeScript application
-RUN npm run build -w rss-scheduler && npm prune --production
+# Build shared package first, then rss-scheduler
+RUN npm run build -w shared && \
+    npm run build -w rss-scheduler && \
+    npm prune --production
 
 # Development stage
 FROM node:20-slim AS development
@@ -46,16 +51,25 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY rss-scheduler/package*.json ./rss-scheduler/
 COPY rss-scheduler/tsconfig.json ./rss-scheduler/
+COPY shared/package*.json ./shared/
+COPY shared/tsconfig.json ./shared/
 
-# Install all dependencies (including dev dependencies) for development
-RUN npm ci -w rss-scheduler
+# Install all workspace dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code and configuration
+COPY rss-scheduler/ ./rss-scheduler/
+COPY shared/ ./shared/
+
+# Build shared package for development
+RUN npm run build -w shared
 
 # Set environment variables for development
 ENV NODE_ENV=development
 ENV PORT=3000
 
-# Create the rss-scheduler directory and set ownership
-RUN mkdir -p /app/rss-scheduler && chown -R rssworker:nodejs /app
+# Create directories and set ownership
+RUN mkdir -p /app/rss-scheduler /app/shared && chown -R rssworker:nodejs /app
 
 # Switch to non-root user
 USER rssworker
@@ -83,8 +97,9 @@ RUN groupadd -g 1001 nodejs && \
 # Copy production dependencies from builder stage
 COPY --from=builder --chown=rssworker:nodejs /app/node_modules ./node_modules
 
-# Copy built application
+# Copy built applications
 COPY --from=builder --chown=rssworker:nodejs /app/rss-scheduler/dist ./dist
+COPY --from=builder --chown=rssworker:nodejs /app/shared/dist ./shared/dist
 COPY --from=builder --chown=rssworker:nodejs /app/rss-scheduler/package.json ./
 
 # Set environment variables

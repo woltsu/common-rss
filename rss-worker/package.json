@@ -4,12 +4,15 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon --exec tsx index.ts"
+    "dev": "nodemon --watch src --watch ../shared/src --ext ts --exec \"npm run build -w shared && tsx src/index.ts\""
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
     "typescript": "^5.9.2",
     "tsx": "^4.19.1",
     "nodemon": "^3.1.7"
+  },
+  "dependencies": {
+    "shared": "file:../shared"
   }
 }

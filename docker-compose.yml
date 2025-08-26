@@ -9,10 +9,13 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - REDIS_URL=redis://redis:6379
+      - SERVICE_NAME=rss-scheduler
     volumes:
       # Mount source code for hot reloading
       - ./rss-scheduler:/app/rss-scheduler
+      - ./shared:/app/shared
       - /app/rss-scheduler/node_modules  # Anonymous volume for node_modules
+      - /app/shared/node_modules
     depends_on:
       - redis
     restart: unless-stopped
@@ -31,10 +34,13 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - REDIS_URL=redis://redis:6379
+      - SERVICE_NAME=rss-worker
     volumes:
       # Mount source code for hot reloading
       - ./rss-worker:/app/rss-worker
+      - ./shared:/app/shared
       - /app/rss-worker/node_modules  # Anonymous volume for node_modules
+      - /app/shared/node_modules
     depends_on:
       - redis
     restart: unless-stopped
