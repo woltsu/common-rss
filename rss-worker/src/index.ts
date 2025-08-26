@@ -1,3 +1,17 @@
-import { logger } from 'shared/src';
+import { getMessage, logger } from 'shared/src';
+import cron from 'node-cron';
 
-logger.info('Hello world from rss-worker!');
+const main = async () => {
+  cron.schedule(
+    '* * * * * *',
+    async () => {
+      const messages = await getMessage({ channel: 'test' });
+      logger.info(messages);
+    },
+    {
+      noOverlap: true,
+    },
+  );
+};
+
+main();
