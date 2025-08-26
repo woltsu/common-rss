@@ -5,6 +5,14 @@ export enum XReadTokens {
   STREAMS = 'STREAMS',
 }
 
+export enum XAddTokens {
+  /**
+   * Auto incrementing ID
+   */
+  ID = '*',
+  MESSAGE = 'MESSAGE',
+}
+
 export enum GroupDeliveryOpts {
   /**
    * Read all new messages

@@ -4,6 +4,7 @@ import {
   ReadMessageOpts,
   SendMessageOpts,
   Streams,
+  XAddTokens,
   XGroupOpts,
   XReadTokens,
 } from './RedisClient.types';
@@ -25,7 +26,7 @@ export class RedisClient {
   }
 
   async sendMessage({ stream, message }: SendMessageOpts) {
-    return await this.client.xadd(stream, '*', 'message', message);
+    return await this.client.xadd(stream, XAddTokens.ID, XAddTokens.MESSAGE, message);
   }
 
   async readMessage({ group }: ReadMessageOpts) {
