@@ -14,7 +14,7 @@ services:
       # Mount source code for hot reloading
       - ./rss-scheduler:/app/rss-scheduler
       - ./shared:/app/shared
-      - /app/rss-scheduler/node_modules  # Anonymous volume for node_modules
+      - /app/rss-scheduler/node_modules # Anonymous volume for node_modules
       - /app/shared/node_modules
     depends_on:
       - redis
@@ -39,7 +39,7 @@ services:
       # Mount source code for hot reloading
       - ./rss-worker:/app/rss-worker
       - ./shared:/app/shared
-      - /app/rss-worker/node_modules  # Anonymous volume for node_modules
+      - /app/rss-worker/node_modules # Anonymous volume for node_modules
       - /app/shared/node_modules
     depends_on:
       - redis
@@ -53,14 +53,14 @@ services:
     image: redis:7-alpine
     container_name: rss-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     restart: unless-stopped
     networks:
       - rss-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3

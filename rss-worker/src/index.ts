@@ -1,3 +1,3 @@
-import { logger } from "shared/src";
+import { logger } from 'shared/src';
 
-logger.info("Hello world from rss-worker!");
+logger.info('Hello world from rss-worker!');

@@ -1,10 +1,10 @@
-import cron from "node-cron";
-import { logger } from "shared/src";
+import cron from 'node-cron';
+import { logger } from 'shared/src';
 
 class RssScheduler {
   public scheduleJobs() {
-    cron.schedule("* * * * *", () => {
-      logger.info("Running a task every minute");
+    cron.schedule('* * * * *', () => {
+      logger.info('Running a task every minute');
     });
   }
 }
