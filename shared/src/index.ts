@@ -1,4 +1,5 @@
 export * from './logger';
 export * from './Redis';
-export * from './Rss';
+export * from './Feeds';
 export * from './utils';
+export * from './Feeds';

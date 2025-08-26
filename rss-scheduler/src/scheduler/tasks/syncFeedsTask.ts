@@ -1,10 +1,10 @@
-import { logger, rssConfig, redisClient, Streams } from '@common-rss/shared';
+import { feedsConfig, logger, redisClient, Streams } from '@common-rss/shared';
 import { RssSchedulerTask } from '../RssScheduler.types';
 
 export const syncFeeds: RssSchedulerTask = {
   name: 'syncFeeds',
   run: async () => {
-    const sources = Object.keys(rssConfig);
+    const sources = Object.keys(feedsConfig);
 
     for (const source of sources) {
       logger.info(`Syncing feed ${source}`);
