@@ -1,5 +1,5 @@
 import { rssScheduler } from './scheduler';
-import { logger } from 'shared/src';
+import { logger } from '@common-rss/shared';
 
 const main = async () => {
   rssScheduler.scheduleJobs();

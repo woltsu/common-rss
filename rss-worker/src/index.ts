@@ -1,6 +1,5 @@
-import { logger, redisClient } from 'shared/src';
 import cron from 'node-cron';
-import { ConsumerGroups } from 'shared/src';
+import { ConsumerGroups, logger, redisClient } from '@common-rss/shared';
 
 const main = async () => {
   cron.schedule(

@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { redisClient, Streams } from 'shared/src';
+import { redisClient, Streams } from '@common-rss/shared';
 
 class RssScheduler {
   public scheduleJobs() {
