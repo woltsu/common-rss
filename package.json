@@ -8,9 +8,15 @@
   "scripts": {
     "dev": "docker compose --profile dev up --build --remove-orphans",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "prettier": "^3.6.2"
+  },
+  "lint-staged": {
+    "*.ts|*.tsx|*.js|*.jsx|*.json|*.md|*.lock": "prettier --ignore-path .prettierignore --write"
   }
 }
