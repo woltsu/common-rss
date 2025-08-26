@@ -3,6 +3,9 @@
 # Build this image from the workspace root directory:
 # docker build -f rss-worker/Dockerfile -t rss-worker:latest .
 #
+# For development:
+# docker build -f rss-worker/Dockerfile --target development -t rss-worker:dev .
+#
 # Build stage
 FROM node:20-slim AS builder
 
@@ -27,6 +30,41 @@ COPY rss-worker/ ./rss-worker/
 
 # Build the TypeScript application
 RUN npm run build -w rss-worker && npm prune --production
+
+# Development stage
+FROM node:20-slim AS development
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user
+RUN groupadd -g 1001 nodejs && \
+    useradd -r -u 1001 -g nodejs rssworker
+
+# Copy workspace root package files
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY rss-worker/package*.json ./rss-worker/
+COPY rss-worker/tsconfig.json ./rss-worker/
+
+# Install all dependencies (including dev dependencies) for development
+RUN npm ci -w rss-worker
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV PORT=3000
+
+# Create the rss-worker directory and set ownership
+RUN mkdir -p /app/rss-worker && chown -R rssworker:nodejs /app
+
+# Switch to non-root user
+USER rssworker
+
+# Expose port (configurable via environment)
+EXPOSE $PORT
+
+# Start the application in development mode with hot reloading
+CMD ["npm", "run", "dev", "-w", "rss-worker"]
 
 # Production stage
 FROM node:20-slim AS production

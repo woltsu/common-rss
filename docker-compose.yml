@@ -1,0 +1,48 @@
+services:
+  rss-worker-dev:
+    build:
+      context: .
+      dockerfile: rss-worker/Dockerfile
+      target: development
+    container_name: rss-worker-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      # Mount source code for hot reloading
+      - ./rss-worker:/app/rss-worker
+      - /app/rss-worker/node_modules  # Anonymous volume for node_modules
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - rss-network
+    profiles:
+      - dev
+
+  redis:
+    image: redis:7-alpine
+    container_name: rss-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - rss-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - dev
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  rss-network:
+    driver: bridge
