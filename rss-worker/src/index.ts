@@ -1,17 +1,12 @@
-import cron from 'node-cron';
-import { ConsumerGroups, logger, redisClient } from '@common-rss/shared';
+import { logger } from '@common-rss/shared';
+import { rssHandler } from './handler';
 
 const main = async () => {
-  cron.schedule(
-    '* * * * * *',
-    async () => {
-      const msg = await redisClient.readMessage({ group: ConsumerGroups.RSS_GROUP });
-      logger.info('Received message', msg);
-    },
-    {
-      noOverlap: true,
-    },
-  );
+  logger.info('Starting RSS worker');
+
+  rssHandler.start();
+
+  logger.info('RSS worker started');
 };
 
 main();

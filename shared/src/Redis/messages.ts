@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
-export const HelloWorldMessage = z.object({
-  type: z.literal('hello-world'),
-  payload: z.string(),
+export const SyncFeedMessage = z.object({
+  type: z.literal('sync-feed'),
+  payload: z.object({
+    source: z.string(),
+  }),
 });
 
-export const redisMessageSchema = z.discriminatedUnion('type', [HelloWorldMessage]);
+export const redisMessageSchema = z.discriminatedUnion('type', [SyncFeedMessage]);
 
-export type redisMessageSchema = z.infer<typeof redisMessageSchema>;
+export type RedisMessage = z.infer<typeof redisMessageSchema>;

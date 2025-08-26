@@ -1,4 +1,4 @@
-import { redisMessageSchema } from './messages';
+import { RedisMessage, redisMessageSchema } from './messages';
 import { json, z } from 'zod';
 
 export enum XReadTokens {
@@ -48,7 +48,7 @@ export enum ConsumerGroups {
 
 export type SendMessageOpts = {
   stream: Streams;
-  message: redisMessageSchema;
+  message: RedisMessage;
 };
 
 export type ReadMessageOpts = {

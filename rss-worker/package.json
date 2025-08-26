@@ -13,7 +13,8 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@common-rss/shared": "file:../shared/src",
     "node-cron": "^4.2.1",
-    "@common-rss/shared": "file:../shared/src"
+    "ts-pattern": "^5.8.0"
   }
 }
