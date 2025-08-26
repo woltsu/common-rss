@@ -1,0 +1,6 @@
+{
+  "name": "common-rss",
+  "workspaces": [
+    "rss-worker"
+  ]
+}
