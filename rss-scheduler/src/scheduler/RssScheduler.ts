@@ -8,7 +8,7 @@ class RssScheduler {
         stream: Streams.RSS_STREAM,
         message: {
           type: 'hello-world',
-          payload: 'Hello, world!',
+          payload: `Hello, world! ${Date.now()}`,
         },
       });
     });
