@@ -5,8 +5,8 @@ const transports = [];
 if (process.env.NODE_ENV === 'development') {
   transports.push(
     new winston.transports.Console({
-      format: winston.format.simple()
-    })
+      format: winston.format.simple(),
+    }),
   );
 }
 
@@ -19,7 +19,7 @@ const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
   defaultMeta: { service: process.env.SERVICE_NAME },
-  transports
+  transports,
 });
 
 export { logger };

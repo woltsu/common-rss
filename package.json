@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "docker compose --profile dev up --build --remove-orphans",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "prettier": "^3.6.2"
