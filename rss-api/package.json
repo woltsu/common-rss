@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/src/index.js",
+    "start": "node dist/index.js",
     "dev": "nodemon --watch src --watch ../shared/src --ext ts --exec \"npm run build -w @common-rss/shared && tsx src/index.ts\""
   },
   "devDependencies": {
