@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 export const rssItem = z.object({
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   link: z.string(),
   guid: z.string(),
-  category: z.string().optional(),
+  category: z.array(z.string()).optional(),
   pubDate: z.string(),
   enclosure: z.string().optional(),
 });

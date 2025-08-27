@@ -4,10 +4,12 @@ import {
   ReadMessageOpts,
   readResponseSchema,
   SendMessageOpts,
+  SetOpts,
   Streams,
   XAddTokens,
   XGroupOpts,
   XReadTokens,
+  ZAddOpts,
 } from './RedisClient.types';
 
 export class RedisClient {
@@ -67,6 +69,14 @@ export class RedisClient {
 
     const parsedReadResponse = readResponseSchema.parse(readResponse);
     return parsedReadResponse[0];
+  }
+
+  async zadd({ key, items }: ZAddOpts) {
+    await this.client.zadd(key, ...items.map((item) => [item.score, item.member]).flat());
+  }
+
+  async set({ key, value }: SetOpts) {
+    await this.client.set(key, value);
   }
 }
 

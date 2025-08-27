@@ -20,5 +20,5 @@ export const syncFeeds: RssSchedulerTask = {
       });
     }
   },
-  schedule: '* * * * *',
+  schedule: '*/10 * * * *', // NOTE: Every 10 minutes
 };

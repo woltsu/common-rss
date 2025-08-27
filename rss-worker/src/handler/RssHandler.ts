@@ -1,4 +1,4 @@
-import { ConsumerGroups, logger, redisClient, RedisMessage, sleep } from '@common-rss/shared';
+import { ConsumerGroups, logger, redisClient } from '@common-rss/shared';
 import { handleTask } from './handlers';
 
 class RssHandler {
@@ -10,8 +10,6 @@ class RssHandler {
         logger.info('Received message', msg);
         await handleTask(msg);
       }
-
-      await sleep(1000);
     }
   }
 }

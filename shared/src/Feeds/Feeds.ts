@@ -1,5 +1,6 @@
 import { logger } from '../logger';
-import { Feed, FeedType } from './feeds.types';
+import { redisClient, RedisSortedSets } from '../Redis';
+import { Feed, FeedItem, FeedType } from './feeds.types';
 import { parseRss } from './rss/RssParser';
 
 const FETCH_TIMEOUT = 30_000 as const;
@@ -23,12 +24,31 @@ class Feeds {
 
       const feedText = await feedResult.text();
 
-      if (feed.type === FeedType.RSS) {
-        const feedItems = await parseRss(feedText);
-        logger.info(`Parsed RSS feed ${feed.source}`, { feedItems });
+      let feedItems: FeedItem[] = [];
 
-        // TODO: Save feed items into Redis
+      if (feed.type === FeedType.RSS) {
+        feedItems = await parseRss(feedText);
+        logger.info(`Parsed RSS feed ${feed.source}`, { nItems: feedItems.length });
       }
+
+      await Promise.allSettled(
+        feedItems.map(async (feedItem) => {
+          await redisClient.set({
+            key: `${RedisSortedSets.RSS_ITEMS}:${feedItem.id}`,
+            value: JSON.stringify(feedItem),
+          });
+        }),
+      );
+
+      await redisClient.zadd({
+        key: RedisSortedSets.RSS_ITEMS,
+        items: feedItems.map((feedItem) => ({
+          score: new Date(feedItem.pubDate).getTime(),
+          member: feedItem.id,
+        })),
+      });
+
+      logger.info(`Updated feed ${feed.source}`, { feedItems });
     } catch (error) {
       logger.error(`Failed to fetch feed ${feed.source}`, { error });
       return false;

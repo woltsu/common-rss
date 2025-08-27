@@ -85,3 +85,20 @@ export const readResponseSchema = z
       messages.map(([_messageId, [_messageLiteral, messageContent]]) => messageContent),
     );
   });
+
+export enum RedisSortedSets {
+  RSS_ITEMS = 'rss-items',
+}
+
+export type ZAddOpts = {
+  key: RedisSortedSets;
+  items: {
+    score: number;
+    member: string;
+  }[];
+};
+
+export type SetOpts = {
+  key: string;
+  value: string;
+};

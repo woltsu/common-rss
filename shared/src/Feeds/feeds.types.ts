@@ -14,7 +14,7 @@ export type Feed = {
 export type FeedItem = {
   id: string;
   title: string;
-  description: string;
+  description: string | undefined;
   link: string;
   pubDate: string;
 };
