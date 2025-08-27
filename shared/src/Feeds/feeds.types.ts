@@ -7,6 +7,7 @@ export type Feed = {
   source: string;
   name: string;
   type: FeedType;
+  contentSelector: string;
 };
 
 export type FeedItem = {
@@ -15,6 +16,7 @@ export type FeedItem = {
   description: string | undefined;
   link: string;
   pubDate: string;
+  enclosure: string | undefined;
 };
 
 export type FeedParser = (xml: string) => Promise<FeedItem[]>;

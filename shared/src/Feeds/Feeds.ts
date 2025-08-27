@@ -1,6 +1,7 @@
 import { logger } from '../logger';
 import { redisClient, RedisSortedSets } from '../Redis';
 import { Feed, FeedItem, FeedType } from './feeds.types';
+import { fetchCleanedHtml } from './html';
 import { parseRss } from './rss/RssParser';
 
 const FETCH_TIMEOUT = 30_000 as const;
@@ -31,8 +32,25 @@ class Feeds {
         logger.info(`Parsed RSS feed ${feed.source}`, { nItems: feedItems.length });
       }
 
-      await Promise.allSettled(
+      const feedItemsWithContent = await Promise.all(
         feedItems.map(async (feedItem) => {
+          if (feedItem.link) {
+            try {
+              const html = await fetchCleanedHtml(feedItem.link, {
+                selector: feed.contentSelector,
+              });
+
+              feedItem.description = html;
+            } catch (error) {
+              logger.error(`Failed to fetch page content for ${feedItem.link}`, { error });
+            }
+          }
+          return feedItem;
+        }),
+      );
+
+      await Promise.allSettled(
+        feedItemsWithContent.map(async (feedItem) => {
           await redisClient.set({
             key: `${RedisSortedSets.RSS_ITEMS}:${feedItem.id}`,
             value: JSON.stringify(feedItem),
@@ -42,13 +60,13 @@ class Feeds {
 
       await redisClient.zadd({
         key: RedisSortedSets.RSS_ITEMS,
-        items: feedItems.map((feedItem) => ({
+        items: feedItemsWithContent.map((feedItem) => ({
           score: new Date(feedItem.pubDate).getTime(),
           member: feedItem.id,
         })),
       });
 
-      logger.info(`Updated feed ${feed.source}`, { feedItems });
+      logger.info(`Updated feed ${feed.source}`);
     } catch (error) {
       logger.error(`Failed to fetch feed ${feed.source}`, { error });
       return false;
@@ -63,7 +81,7 @@ class Feeds {
     const feedItemIds = await redisClient.zrange({
       key: RedisSortedSets.RSS_ITEMS,
       start: 0,
-      stop: -1,
+      stop: 99,
     });
 
     // Get all feed item data from Redis

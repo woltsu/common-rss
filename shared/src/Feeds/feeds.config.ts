@@ -5,15 +5,18 @@ export const feedsConfig: Record<string, Feed> = {
     source: 'https://www.hs.fi/rss/tuoreimmat.xml',
     name: 'Helsingin Sanomat',
     type: FeedType.RSS,
+    contentSelector: '.article-body',
   },
   yle: {
     source: 'https://yle.fi/rss/uutiset/tuoreimmat',
     name: 'YLE',
     type: FeedType.RSS,
+    contentSelector: '.yle__article__content',
   },
   is: {
     source: 'https://www.is.fi/rss/tuoreimmat.xml',
     name: 'Ilta-Sanomat',
     type: FeedType.RSS,
+    contentSelector: '.article-body',
   },
 };

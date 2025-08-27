@@ -6,11 +6,14 @@ export const parseRss: FeedParser = async (xml: string) => {
   const parsedXml = parseXml(xml);
   const parsedXmlSchema = rssXmlResponse.parse(parsedXml);
 
-  return parsedXmlSchema.rss.channel.item.map((item) => ({
-    id: item.guid,
-    title: item.title,
-    description: item.description,
-    link: item.link,
-    pubDate: item.pubDate,
-  }));
+  return parsedXmlSchema.rss.channel.item.map((item) => {
+    return {
+      id: item.guid['#text'],
+      title: item.title['#text'],
+      description: item.description?.['#text'],
+      link: item.link['#text'],
+      pubDate: item.pubDate['#text'],
+      enclosure: item.enclosure?.['@_url'],
+    };
+  });
 };

@@ -1,5 +1,5 @@
 import { feeds, logger } from '@common-rss/shared';
-import { Feed } from 'feed';
+import { Feed, Item } from 'feed';
 import cron from 'node-cron';
 
 class CommonRss {
@@ -34,13 +34,24 @@ class CommonRss {
     });
 
     feedItems.forEach((feedItem) => {
-      this.feed?.addItem({
+      const item: Item = {
         title: feedItem.title,
         date: new Date(feedItem.pubDate),
         link: feedItem.link,
-        description: feedItem.description ?? '',
         guid: feedItem.id,
-      });
+      };
+
+      if (feedItem.enclosure) {
+        item.enclosure = {
+          url: feedItem.enclosure,
+        };
+      }
+
+      if (feedItem.description) {
+        item.description = feedItem.description;
+      }
+
+      this.feed?.addItem(item);
     });
   }
 

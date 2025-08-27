@@ -1,13 +1,21 @@
 import { z } from 'zod';
 
+export const textNode = z.object({
+  '#text': z.string(),
+});
+
+export const enclosureNode = z.object({
+  '@_url': z.string(),
+});
+
 export const rssItem = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  link: z.string(),
-  guid: z.string(),
-  category: z.array(z.string()).optional(),
-  pubDate: z.string(),
-  enclosure: z.string().optional(),
+  title: textNode,
+  description: textNode.optional(),
+  link: textNode,
+  guid: textNode,
+  category: z.array(textNode).optional(),
+  pubDate: textNode,
+  enclosure: enclosureNode.optional(),
 });
 
 export type RssItem = z.infer<typeof rssItem>;
