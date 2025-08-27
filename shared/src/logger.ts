@@ -2,13 +2,11 @@ import winston from 'winston';
 
 const transports = [];
 
-if (process.env.NODE_ENV === 'development') {
-  transports.push(
-    new winston.transports.Console({
-      format: winston.format.simple(),
-    }),
-  );
-}
+transports.push(
+  new winston.transports.Console({
+    format: winston.format.simple(),
+  }),
+);
 
 if (process.env.NODE_ENV === 'production') {
   transports.push(new winston.transports.File({ filename: 'error.log', level: 'error' }));
