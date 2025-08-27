@@ -1,10 +1,10 @@
 # Multi-stage build for production optimization
 # 
 # Build this image from the workspace root directory:
-# docker build -f rss-scheduler/Dockerfile -t rss-scheduler:latest .
+# docker build -f rss-api/Dockerfile -t rss-api:latest .
 #
 # For development:
-# docker build -f rss-scheduler/Dockerfile --target development -t rss-scheduler:dev .
+# docker build -f rss-api/Dockerfile --target development -t rss-api:dev .
 #
 # Build stage
 FROM node:20-slim AS builder
@@ -14,13 +14,13 @@ WORKDIR /app
 
 # Create non-root user for security
 RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs rssscheduler
+    useradd -r -u 1001 -g nodejs rssapi
 
 # Copy workspace root package files
 COPY package*.json ./
 COPY tsconfig.json ./
-COPY rss-scheduler/package*.json ./rss-scheduler/
-COPY rss-scheduler/tsconfig.json ./rss-scheduler/
+COPY rss-api/package*.json ./rss-api/
+COPY rss-api/tsconfig.json ./rss-api/
 COPY shared/package*.json ./shared/
 COPY shared/tsconfig.json ./shared/
 
@@ -28,12 +28,12 @@ COPY shared/tsconfig.json ./shared/
 RUN npm ci && npm cache clean --force
 
 # Copy source code and configuration
-COPY rss-scheduler/ ./rss-scheduler/
+COPY rss-api/ ./rss-api/
 COPY shared/ ./shared/
 
-# Build shared package first, then rss-scheduler
+# Build shared package first, then rss-api
 RUN npm run build -w shared && \
-    npm run build -w rss-scheduler && \
+    npm run build -w rss-api && \
     npm prune --production
 
 # Development stage
@@ -44,13 +44,13 @@ WORKDIR /app
 
 # Create non-root user
 RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs rssscheduler
+    useradd -r -u 1001 -g nodejs rssworker
 
 # Copy workspace root package files
 COPY package*.json ./
 COPY tsconfig.json ./
-COPY rss-scheduler/package*.json ./rss-scheduler/
-COPY rss-scheduler/tsconfig.json ./rss-scheduler/
+COPY rss-api/package*.json ./rss-api/
+COPY rss-api/tsconfig.json ./rss-api/
 COPY shared/package*.json ./shared/
 COPY shared/tsconfig.json ./shared/
 
@@ -58,7 +58,7 @@ COPY shared/tsconfig.json ./shared/
 RUN npm ci
 
 # Copy source code and configuration
-COPY rss-scheduler/ ./rss-scheduler/
+COPY rss-api/ ./rss-api/
 COPY shared/ ./shared/
 
 # Build shared package for development
@@ -69,16 +69,16 @@ ENV NODE_ENV=development
 ENV PORT=3000
 
 # Create directories and set ownership
-RUN mkdir -p /app/rss-scheduler /app/shared && chown -R rssscheduler:nodejs /app
+RUN mkdir -p /app/rss-api /app/shared && chown -R rssworker:nodejs /app
 
 # Switch to non-root user
-USER rssscheduler
+USER rssworker
 
 # Expose port (configurable via environment)
 EXPOSE $PORT
 
 # Start the application in development mode with hot reloading
-CMD ["npm", "run", "dev", "-w", "rss-scheduler"]
+CMD ["npm", "run", "dev", "-w", "rss-api"]
 
 # Production stage
 FROM node:20-slim AS production
@@ -92,22 +92,22 @@ WORKDIR /app
 
 # Create non-root user
 RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs rssscheduler
+    useradd -r -u 1001 -g nodejs rssworker
 
 # Copy production dependencies from builder stage
-COPY --from=builder --chown=rssscheduler:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=rssworker:nodejs /app/node_modules ./node_modules
 
 # Copy built applications
-COPY --from=builder --chown=rssscheduler:nodejs /app/rss-scheduler/dist ./dist
-COPY --from=builder --chown=rssscheduler:nodejs /app/shared/dist ./shared/dist
-COPY --from=builder --chown=rssscheduler:nodejs /app/rss-scheduler/package.json ./
+COPY --from=builder --chown=rssworker:nodejs /app/rss-api/dist ./dist
+COPY --from=builder --chown=rssworker:nodejs /app/shared/dist ./shared/dist
+COPY --from=builder --chown=rssworker:nodejs /app/rss-api/package.json ./
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
 
 # Switch to non-root user
-USER rssscheduler
+USER rssworker
 
 # Expose port (configurable via environment)
 EXPOSE $PORT

@@ -10,6 +10,7 @@ import {
   XGroupOpts,
   XReadTokens,
   ZAddOpts,
+  ZRangeOpts,
 } from './RedisClient.types';
 
 export class RedisClient {
@@ -77,6 +78,14 @@ export class RedisClient {
 
   async set({ key, value }: SetOpts) {
     await this.client.set(key, value);
+  }
+
+  async get(key: string): Promise<string | null> {
+    return await this.client.get(key);
+  }
+
+  async zrange({ key, start, stop }: ZRangeOpts) {
+    return await this.client.zrange(key, start, stop);
   }
 }
 

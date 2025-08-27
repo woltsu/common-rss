@@ -58,6 +58,29 @@ class Feeds {
 
     return true;
   }
+
+  async getFeedItems(): Promise<FeedItem[]> {
+    const feedItemIds = await redisClient.zrange({
+      key: RedisSortedSets.RSS_ITEMS,
+      start: 0,
+      stop: -1,
+    });
+
+    // Get all feed item data from Redis
+    const feedItemsData = await Promise.allSettled(
+      feedItemIds.map(async (feedItemId) => {
+        const feedItemData = await redisClient.get(`${RedisSortedSets.RSS_ITEMS}:${feedItemId}`);
+        return feedItemData ? (JSON.parse(feedItemData) as FeedItem) : null;
+      }),
+    );
+
+    // Filter out failed retrievals and null values
+    return feedItemsData
+      .filter(
+        (result): result is PromiseFulfilledResult<FeedItem> => result.status === 'fulfilled' && result.value !== null,
+      )
+      .map((result) => result.value);
+  }
 }
 
 export const feeds = new Feeds();

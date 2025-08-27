@@ -7,7 +7,6 @@ services:
     container_name: rss-scheduler-dev
     environment:
       - NODE_ENV=development
-      - PORT=3000
       - REDIS_URL=redis://redis:6379
       - SERVICE_NAME=rss-scheduler
     volumes:
@@ -31,7 +30,6 @@ services:
       target: development
     environment:
       - NODE_ENV=development
-      - PORT=3000
       - REDIS_URL=redis://redis:6379
       - SERVICE_NAME=rss-worker
     volumes:
@@ -43,6 +41,30 @@ services:
     depends_on:
       - redis
     restart: unless-stopped
+    networks:
+      - rss-network
+    profiles:
+      - dev
+
+  rss-api-dev:
+    build:
+      context: .
+      dockerfile: rss-api/Dockerfile
+      target: development
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - SERVICE_NAME=rss-api
+    volumes:
+      - ./rss-api:/app/rss-api
+      - ./shared:/app/shared
+      - /app/rss-api/node_modules # Anonymous volume for node_modules
+      - /app/shared/node_modules
+    depends_on:
+      - redis
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
     networks:
       - rss-network
     profiles:

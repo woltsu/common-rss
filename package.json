@@ -3,6 +3,7 @@
   "workspaces": [
     "rss-worker",
     "rss-scheduler",
+    "rss-api",
     "shared"
   ],
   "scripts": {

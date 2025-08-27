@@ -102,3 +102,9 @@ export type SetOpts = {
   key: string;
   value: string;
 };
+
+export type ZRangeOpts = {
+  key: RedisSortedSets;
+  start: number;
+  stop: number;
+};
