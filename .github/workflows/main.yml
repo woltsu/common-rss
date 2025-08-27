@@ -58,6 +58,7 @@ jobs:
         with:
           context: .
           file: ./${{ matrix.service }}/Dockerfile
+          target: production
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
