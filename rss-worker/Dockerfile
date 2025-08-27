@@ -32,7 +32,7 @@ COPY rss-worker/ ./rss-worker/
 COPY shared/ ./shared/
 
 # Build shared package first, then rss-worker
-RUN npm run build -w shared && \
+RUN npm run build -w @common-rss/shared && \
     npm run build -w rss-worker && \
     npm prune --production
 
@@ -66,7 +66,7 @@ COPY rss-worker/ ./rss-worker/
 COPY shared/ ./shared/
 
 # Build shared package for development
-RUN npm run build -w shared
+RUN npm run build -w @common-rss/shared
 
 # Set environment variables for development
 ENV NODE_ENV=development
@@ -98,13 +98,17 @@ WORKDIR /app
 RUN groupadd -g 1001 nodejs && \
     useradd -r -u 1001 -g nodejs rssworker
 
+# Copy workspace root configuration to maintain workspace structure
+COPY --from=builder --chown=rssworker:nodejs /app/package.json ./
+
 # Copy production dependencies from builder stage
 COPY --from=builder --chown=rssworker:nodejs /app/node_modules ./node_modules
 
-# Copy built applications
-COPY --from=builder --chown=rssworker:nodejs /app/rss-worker/dist ./dist
+# Copy built applications maintaining workspace structure
+COPY --from=builder --chown=rssworker:nodejs /app/rss-worker/dist ./rss-worker/dist
+COPY --from=builder --chown=rssworker:nodejs /app/rss-worker/package.json ./rss-worker/
 COPY --from=builder --chown=rssworker:nodejs /app/shared/dist ./shared/dist
-COPY --from=builder --chown=rssworker:nodejs /app/rss-worker/package.json ./
+COPY --from=builder --chown=rssworker:nodejs /app/shared/package.json ./shared/
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -123,5 +127,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start the application
-CMD ["npm", "start"]
+# Start the application using workspace
+CMD ["npm", "start", "-w", "rss-worker"]
