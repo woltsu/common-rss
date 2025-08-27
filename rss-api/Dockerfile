@@ -83,10 +83,6 @@ CMD ["npm", "run", "dev", "-w", "rss-api"]
 # Production stage
 FROM node:20-slim AS production
 
-# Install dumb-init for proper signal handling
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Set working directory
 WORKDIR /app
 
@@ -115,9 +111,6 @@ EXPOSE $PORT
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "console.log('Health check passed')" || exit 1
-
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application
 CMD ["npm", "start"]
