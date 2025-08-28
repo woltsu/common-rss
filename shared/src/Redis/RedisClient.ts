@@ -10,7 +10,10 @@ import {
   XGroupOpts,
   XReadTokens,
   ZAddOpts,
+  ZRangeByScoreOpts,
   ZRangeOpts,
+  ZRemOpts,
+  ZRevRangeOpts,
 } from './RedisClient.types';
 
 export class RedisClient {
@@ -80,12 +83,28 @@ export class RedisClient {
     await this.client.set(key, value);
   }
 
+  async del(key: string) {
+    await this.client.del(key);
+  }
+
   async get(key: string): Promise<string | null> {
     return await this.client.get(key);
   }
 
   async zrange({ key, start, stop }: ZRangeOpts) {
     return await this.client.zrange(key, start, stop);
+  }
+
+  async zrevrange({ key, start, stop }: ZRevRangeOpts) {
+    return await this.client.zrevrange(key, start, stop);
+  }
+
+  async zrangebyscore({ key, min, max }: ZRangeByScoreOpts) {
+    return await this.client.zrangebyscore(key, min, max);
+  }
+
+  async zrem({ key, members }: ZRemOpts) {
+    return await this.client.zrem(key, members);
   }
 }
 

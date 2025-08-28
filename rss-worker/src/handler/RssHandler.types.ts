@@ -1,3 +1,3 @@
 import { RedisMessage } from '@common-rss/shared';
 
-export type RssHandler = (message: RedisMessage) => Promise<boolean>;
+export type RssHandler<T extends RedisMessage> = (message: T) => Promise<boolean>;

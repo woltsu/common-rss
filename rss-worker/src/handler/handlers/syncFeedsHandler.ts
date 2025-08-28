@@ -1,7 +1,7 @@
-import { feeds, feedsConfig, logger } from '@common-rss/shared';
+import { feeds, feedsConfig, logger, SyncFeedMessage } from '@common-rss/shared';
 import { RssHandler } from '../RssHandler.types';
 
-export const syncFeedsHandler: RssHandler = async ({ payload }) => {
+export const syncFeedsHandler: RssHandler<SyncFeedMessage> = async ({ payload }) => {
   const { source } = payload;
   const feed = feedsConfig[source];
 

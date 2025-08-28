@@ -108,3 +108,20 @@ export type ZRangeOpts = {
   start: number;
   stop: number;
 };
+
+export type ZRevRangeOpts = {
+  key: RedisSortedSets;
+  start: number;
+  stop: number;
+};
+
+export type ZRangeByScoreOpts = {
+  key: RedisSortedSets;
+  min: number;
+  max: number;
+};
+
+export type ZRemOpts = {
+  key: RedisSortedSets;
+  members: string[];
+};

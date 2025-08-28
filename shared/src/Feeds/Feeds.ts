@@ -78,10 +78,10 @@ class Feeds {
   }
 
   async getFeedItems(): Promise<FeedItem[]> {
-    const feedItemIds = await redisClient.zrange({
+    const feedItemIds = await redisClient.zrevrange({
       key: RedisSortedSets.RSS_ITEMS,
       start: 0,
-      stop: 99,
+      stop: 999,
     });
 
     // Get all feed item data from Redis
