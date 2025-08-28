@@ -55,6 +55,7 @@ services:
       - NODE_ENV=development
       - REDIS_URL=redis://redis:6379
       - SERVICE_NAME=rss-api
+      - SITE_DOMAIN=localhost
     volumes:
       - ./rss-api:/app/rss-api
       - ./shared:/app/shared
